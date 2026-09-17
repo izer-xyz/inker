@@ -198,9 +198,16 @@
     return Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
   }
 
+  function getPaginationStep() {
+    const scale = zoomLevel / 100;
+    const viewportHeight = window.innerHeight / scale;
+    const overlap = PAGE_OVERLAP / scale;
+    return Math.max(240 / scale, viewportHeight - overlap);
+  }
+
   function goToPage(direction) {
     const current = window.scrollY;
-    const step = Math.max(240, window.innerHeight - PAGE_OVERLAP);
+    const step = getPaginationStep();
     const limit = getScrollLimit();
     const target = Math.max(0, Math.min(limit, current + direction * step));
 
