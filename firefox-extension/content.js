@@ -49,8 +49,8 @@
     html.eink-reader-mode a * {
       color: #000000 !important;
       text-decoration-line: underline !important;
-      text-decoration-thickness: 1px !important;
-      text-underline-offset: .11em !important;
+      text-decoration-thickness: .75px !important;
+      text-underline-offset: .08em !important;
     }
 
     html.eink-reader-mode img,
