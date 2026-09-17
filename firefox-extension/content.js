@@ -8,13 +8,8 @@
   const STATUS_ID = "eink-reader-status";
   const STYLE_ID = "eink-reader-styles";
   const STATIC_POSITION_CLASS = "eink-reader-static-position";
-  const ZOOM_STORAGE_KEY = "einkReaderZoom";
-  const MIN_ZOOM = 75;
-  const MAX_ZOOM = 150;
-  const ZOOM_STEP = 10;
 
   let enabled = false;
-  let zoomLevel = 100;
   let touchStart = null;
   let wheelAccumulator = 0;
   let statusTimer = null;
@@ -129,32 +124,6 @@
       background: #000000 !important;
     }
 
-    html.eink-reader-mode #${STATUS_ID} .eink-reader-zoom {
-      display: flex !important;
-      align-items: center !important;
-      gap: 5px !important;
-      padding-left: 8px !important;
-      border-left: 1px solid #000000 !important;
-    }
-
-    html.eink-reader-mode #${STATUS_ID} .eink-reader-zoom-button {
-      width: 22px !important;
-      height: 22px !important;
-      border: 1px solid #000000 !important;
-      font: 700 16px/18px system-ui, sans-serif !important;
-      text-align: center !important;
-    }
-
-    html.eink-reader-mode #${STATUS_ID} .eink-reader-zoom-button:hover {
-      background: #000000 !important;
-      color: #ffffff !important;
-    }
-
-    html.eink-reader-mode #${STATUS_ID} .eink-reader-zoom-value {
-      min-width: 38px !important;
-      font: 600 11px/1 system-ui, sans-serif !important;
-      text-align: center !important;
-    }
   `;
 
   function ensureStyle() {
@@ -223,29 +192,13 @@
         <span class="eink-reader-dot" aria-hidden="true"></span>
         <span data-role="label">PAGE MODE · ON</span>
       </button>
-      <div class="eink-reader-zoom" role="group" aria-label="Text size">
-        <button class="eink-reader-zoom-button" data-action="zoom-out" type="button" title="Zoom out" aria-label="Zoom out">−</button>
-        <span class="eink-reader-zoom-value" data-role="zoom-value">100%</span>
-        <button class="eink-reader-zoom-button" data-action="zoom-in" type="button" title="Zoom in" aria-label="Zoom in">+</button>
-      </div>
     `;
     status.querySelector(".eink-reader-status-button").addEventListener("click", function (event) {
       event.preventDefault();
       event.stopPropagation();
       setEnabled(false);
     });
-    status.querySelector('[data-action="zoom-out"]').addEventListener("click", function (event) {
-      event.preventDefault();
-      event.stopPropagation();
-      setZoom(zoomLevel - ZOOM_STEP);
-    });
-    status.querySelector('[data-action="zoom-in"]').addEventListener("click", function (event) {
-      event.preventDefault();
-      event.stopPropagation();
-      setZoom(zoomLevel + ZOOM_STEP);
-    });
     document.documentElement.appendChild(status);
-    updateControls();
     return status;
   }
 
@@ -258,16 +211,9 @@
     return Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
   }
 
-  function getPaginationStep() {
-    const scale = zoomLevel / 100;
-    const viewportHeight = window.innerHeight / scale;
-    const overlap = PAGE_OVERLAP / scale;
-    return Math.max(240 / scale, viewportHeight - overlap);
-  }
-
   function goToPage(direction) {
     const current = window.scrollY;
-    const step = getPaginationStep();
+    const step = Math.max(240, window.innerHeight - PAGE_OVERLAP);
     const limit = getScrollLimit();
     const target = Math.max(0, Math.min(limit, current + direction * step));
 
@@ -293,46 +239,10 @@
     }, 1200);
   }
 
-  function normalizeZoom(value) {
-    const number = Number(value);
-    if (!Number.isFinite(number)) return 100;
-    return Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, Math.round(number / ZOOM_STEP) * ZOOM_STEP));
-  }
-
-  function updateControls() {
-    const status = document.getElementById(STATUS_ID);
-    if (!status) return;
-    const zoomValue = status.querySelector('[data-role="zoom-value"]');
-    if (zoomValue) zoomValue.textContent = `${zoomLevel}%`;
-    const zoomOut = status.querySelector('[data-action="zoom-out"]');
-    const zoomIn = status.querySelector('[data-action="zoom-in"]');
-    if (zoomOut) zoomOut.disabled = zoomLevel <= MIN_ZOOM;
-    if (zoomIn) zoomIn.disabled = zoomLevel >= MAX_ZOOM;
-  }
-
-  function applyZoom() {
-    if (enabled && zoomLevel !== 100) {
-      document.documentElement.style.setProperty("zoom", `${zoomLevel / 100}`);
-    } else {
-      document.documentElement.style.removeProperty("zoom");
-    }
-    updateControls();
-  }
-
-  function setZoom(nextValue, persist) {
-    zoomLevel = normalizeZoom(nextValue);
-    applyZoom();
-    if (enabled) showStatus(`ZOOM · ${zoomLevel}%`);
-    if (persist !== false && api?.storage?.local) {
-      api.storage.local.set({ [ZOOM_STORAGE_KEY]: zoomLevel });
-    }
-  }
-
   function setEnabled(nextValue, persist) {
     enabled = Boolean(nextValue);
     ensureStyle();
     document.documentElement.classList.toggle("eink-reader-mode", enabled);
-    applyZoom();
 
     if (enabled) {
       scanForStickyElements();
@@ -425,15 +335,11 @@
   function onRuntimeMessage(message) {
     if (!message) return;
     if (message.type === "eink-reader:get-state") {
-      return Promise.resolve({ enabled, zoomLevel });
-    }
-    if (message.type === "eink-reader:set-zoom") {
-      setZoom(message.zoomLevel);
-      return Promise.resolve({ enabled, zoomLevel });
+      return Promise.resolve({ enabled });
     }
     if (message.type !== "eink-reader:set-enabled") return;
     setEnabled(message.enabled);
-    return Promise.resolve({ enabled, zoomLevel });
+    return Promise.resolve({ enabled });
   }
 
   ensureStyle();
@@ -445,10 +351,7 @@
   api?.runtime?.onMessage?.addListener(onRuntimeMessage);
 
   if (api?.storage?.local) {
-    api.storage.local.get([STORAGE_KEY, ZOOM_STORAGE_KEY]).then(function (result) {
-      if (result && result[ZOOM_STORAGE_KEY] !== undefined) {
-        zoomLevel = normalizeZoom(result[ZOOM_STORAGE_KEY]);
-      }
+    api.storage.local.get(STORAGE_KEY).then(function (result) {
       if (result && result[STORAGE_KEY]) setEnabled(true, false);
     }).catch(function () {
       // Private browsing can disable extension storage; swipe activation still works.

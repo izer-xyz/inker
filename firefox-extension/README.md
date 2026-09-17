@@ -11,8 +11,7 @@ E-ink Reader turns ordinary web pages into a high-contrast, page-by-page reading
 - Converts sticky and fixed-position page elements into normal document flow, so headers stay near the beginning and footers stay near the end instead of covering every page.
 - Removes shadows and text effects that create unnecessary ghosting.
 - Converts images, video, canvas, and SVG artwork to grayscale with slightly higher contrast.
-- Shows a small `PAGE MODE · ON` control with zoom out and zoom in buttons so text can be adjusted without reopening the extension menu.
-- Supports 75%–150% zoom in 10% steps, with matching controls in the toolbar popup.
+- Shows a small `PAGE MODE · ON` control so reading mode can be turned off without reopening the extension menu.
 - Press `Escape` to exit reading mode.
 - The toolbar popup can toggle the mode for the current page.
 
