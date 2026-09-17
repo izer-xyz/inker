@@ -68,6 +68,49 @@ h1 {
   background: #fffdf7;
 }
 
+.zoom-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+  padding: 12px 14px;
+  border: 1px solid #c9c4b8;
+  background: #fffdf7;
+}
+
+.zoom-label {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 16px;
+}
+
+.zoom-actions {
+  display: flex;
+  gap: 5px;
+}
+
+.zoom-button {
+  width: 30px;
+  height: 30px;
+  border: 1px solid #171717;
+  background: #fffdf7;
+  color: #171717;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.zoom-button:hover:not(:disabled),
+.zoom-button:focus-visible:not(:disabled) {
+  background: #171717;
+  color: #fffdf7;
+}
+
+.zoom-button:disabled {
+  cursor: not-allowed;
+  opacity: .35;
+}
+
 .state-label {
   margin: 0;
   font-family: Georgia, "Times New Roman", serif;

@@ -7,8 +7,13 @@
   const PAGE_OVERLAP = 72;
   const STATUS_ID = "eink-reader-status";
   const STYLE_ID = "eink-reader-styles";
+  const ZOOM_STORAGE_KEY = "einkReaderZoom";
+  const MIN_ZOOM = 75;
+  const MAX_ZOOM = 150;
+  const ZOOM_STEP = 10;
 
   let enabled = false;
+  let zoomLevel = 100;
   let touchStart = null;
   let wheelAccumulator = 0;
   let statusTimer = null;
@@ -35,7 +40,9 @@
     html.eink-reader-mode a,
     html.eink-reader-mode a * {
       color: #000000 !important;
+      text-decoration-line: underline !important;
       text-decoration-thickness: 2px !important;
+      text-underline-offset: .16em !important;
     }
 
     html.eink-reader-mode img,
@@ -71,7 +78,6 @@
       font: 600 12px/1.2 system-ui, sans-serif !important;
       letter-spacing: .03em !important;
       box-shadow: 3px 3px 0 #000000 !important;
-      cursor: pointer !important;
       user-select: none !important;
     }
 
@@ -81,11 +87,60 @@
       font: inherit !important;
     }
 
+    html.eink-reader-mode #${STATUS_ID} button {
+      cursor: pointer !important;
+      border: 0 !important;
+      background: transparent !important;
+      color: #000000 !important;
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+
+    html.eink-reader-mode #${STATUS_ID} button:focus-visible {
+      outline: 2px solid #000000 !important;
+      outline-offset: 2px !important;
+    }
+
+    html.eink-reader-mode #${STATUS_ID} .eink-reader-status-button {
+      display: flex !important;
+      align-items: center !important;
+      gap: 8px !important;
+      font: 600 12px/1.2 system-ui, sans-serif !important;
+      letter-spacing: .03em !important;
+    }
+
     html.eink-reader-mode #${STATUS_ID} .eink-reader-dot {
       width: 8px !important;
       height: 8px !important;
       border-radius: 50% !important;
       background: #000000 !important;
+    }
+
+    html.eink-reader-mode #${STATUS_ID} .eink-reader-zoom {
+      display: flex !important;
+      align-items: center !important;
+      gap: 5px !important;
+      padding-left: 8px !important;
+      border-left: 1px solid #000000 !important;
+    }
+
+    html.eink-reader-mode #${STATUS_ID} .eink-reader-zoom-button {
+      width: 22px !important;
+      height: 22px !important;
+      border: 1px solid #000000 !important;
+      font: 700 16px/18px system-ui, sans-serif !important;
+      text-align: center !important;
+    }
+
+    html.eink-reader-mode #${STATUS_ID} .eink-reader-zoom-button:hover {
+      background: #000000 !important;
+      color: #ffffff !important;
+    }
+
+    html.eink-reader-mode #${STATUS_ID} .eink-reader-zoom-value {
+      min-width: 38px !important;
+      font: 600 11px/1 system-ui, sans-serif !important;
+      text-align: center !important;
     }
   `;
 
@@ -101,17 +156,36 @@
     let status = document.getElementById(STATUS_ID);
     if (status) return status;
 
-    status = document.createElement("button");
+    status = document.createElement("div");
     status.id = STATUS_ID;
-    status.type = "button";
-    status.title = "Turn off e-ink reading mode";
-    status.innerHTML = '<span class="eink-reader-dot" aria-hidden="true"></span><span>PAGE MODE · ON</span>';
-    status.addEventListener("click", function (event) {
+    status.innerHTML = `
+      <button class="eink-reader-status-button" type="button" title="Turn off e-ink reading mode">
+        <span class="eink-reader-dot" aria-hidden="true"></span>
+        <span data-role="label">PAGE MODE · ON</span>
+      </button>
+      <div class="eink-reader-zoom" role="group" aria-label="Text size">
+        <button class="eink-reader-zoom-button" data-action="zoom-out" type="button" title="Zoom out" aria-label="Zoom out">−</button>
+        <span class="eink-reader-zoom-value" data-role="zoom-value">100%</span>
+        <button class="eink-reader-zoom-button" data-action="zoom-in" type="button" title="Zoom in" aria-label="Zoom in">+</button>
+      </div>
+    `;
+    status.querySelector(".eink-reader-status-button").addEventListener("click", function (event) {
       event.preventDefault();
       event.stopPropagation();
       setEnabled(false);
     });
+    status.querySelector('[data-action="zoom-out"]').addEventListener("click", function (event) {
+      event.preventDefault();
+      event.stopPropagation();
+      setZoom(zoomLevel - ZOOM_STEP);
+    });
+    status.querySelector('[data-action="zoom-in"]').addEventListener("click", function (event) {
+      event.preventDefault();
+      event.stopPropagation();
+      setZoom(zoomLevel + ZOOM_STEP);
+    });
     document.documentElement.appendChild(status);
+    updateControls();
     return status;
   }
 
@@ -142,20 +216,56 @@
   function showStatus(message) {
     if (!enabled) return;
     const status = ensureStatus();
-    const label = status.querySelector("span:last-child");
+    const label = status.querySelector('[data-role="label"]');
     if (label) label.textContent = message;
     clearTimeout(statusTimer);
     statusTimer = setTimeout(function () {
       if (!enabled) return;
-      const currentLabel = status.querySelector("span:last-child");
+      const currentLabel = status.querySelector('[data-role="label"]');
       if (currentLabel) currentLabel.textContent = "PAGE MODE · ON";
     }, 1200);
+  }
+
+  function normalizeZoom(value) {
+    const number = Number(value);
+    if (!Number.isFinite(number)) return 100;
+    return Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, Math.round(number / ZOOM_STEP) * ZOOM_STEP));
+  }
+
+  function updateControls() {
+    const status = document.getElementById(STATUS_ID);
+    if (!status) return;
+    const zoomValue = status.querySelector('[data-role="zoom-value"]');
+    if (zoomValue) zoomValue.textContent = `${zoomLevel}%`;
+    const zoomOut = status.querySelector('[data-action="zoom-out"]');
+    const zoomIn = status.querySelector('[data-action="zoom-in"]');
+    if (zoomOut) zoomOut.disabled = zoomLevel <= MIN_ZOOM;
+    if (zoomIn) zoomIn.disabled = zoomLevel >= MAX_ZOOM;
+  }
+
+  function applyZoom() {
+    if (enabled && zoomLevel !== 100) {
+      document.documentElement.style.setProperty("zoom", `${zoomLevel / 100}`);
+    } else {
+      document.documentElement.style.removeProperty("zoom");
+    }
+    updateControls();
+  }
+
+  function setZoom(nextValue, persist) {
+    zoomLevel = normalizeZoom(nextValue);
+    applyZoom();
+    if (enabled) showStatus(`ZOOM · ${zoomLevel}%`);
+    if (persist !== false && api?.storage?.local) {
+      api.storage.local.set({ [ZOOM_STORAGE_KEY]: zoomLevel });
+    }
   }
 
   function setEnabled(nextValue, persist) {
     enabled = Boolean(nextValue);
     ensureStyle();
     document.documentElement.classList.toggle("eink-reader-mode", enabled);
+    applyZoom();
 
     if (enabled) {
       ensureStatus();
@@ -245,11 +355,15 @@
   function onRuntimeMessage(message) {
     if (!message) return;
     if (message.type === "eink-reader:get-state") {
-      return Promise.resolve({ enabled });
+      return Promise.resolve({ enabled, zoomLevel });
+    }
+    if (message.type === "eink-reader:set-zoom") {
+      setZoom(message.zoomLevel);
+      return Promise.resolve({ enabled, zoomLevel });
     }
     if (message.type !== "eink-reader:set-enabled") return;
     setEnabled(message.enabled);
-    return Promise.resolve({ enabled });
+    return Promise.resolve({ enabled, zoomLevel });
   }
 
   ensureStyle();
@@ -261,7 +375,10 @@
   api?.runtime?.onMessage?.addListener(onRuntimeMessage);
 
   if (api?.storage?.local) {
-    api.storage.local.get(STORAGE_KEY).then(function (result) {
+    api.storage.local.get([STORAGE_KEY, ZOOM_STORAGE_KEY]).then(function (result) {
+      if (result && result[ZOOM_STORAGE_KEY] !== undefined) {
+        zoomLevel = normalizeZoom(result[ZOOM_STORAGE_KEY]);
+      }
       if (result && result[STORAGE_KEY]) setEnabled(true, false);
     }).catch(function () {
       // Private browsing can disable extension storage; swipe activation still works.
