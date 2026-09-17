@@ -1,6 +1,6 @@
-# [Project name]
+# E-ink Reader
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+Firefox extension that makes web pages easier to read on e-ink devices by using high-contrast styling and gesture-controlled pagination.
 
 ## Run & Operate
 
@@ -22,15 +22,21 @@ _Replace the heading above with the project's name, and this line with one sente
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `firefox-extension/manifest.json` — Firefox WebExtension metadata and permissions.
+- `firefox-extension/content.js` — swipe activation, pagination, contrast mode, and keyboard controls.
+- `firefox-extension/popup.html` — toolbar popup markup and usage guidance.
+- `firefox-extension/popup.css` — popup styling.
+- `firefox-extension/popup.js` — current-tab toggle behavior.
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- The extension uses a content script rather than a separate reader view so the page's links, forms, and normal browsing behavior remain available.
+- Vertical swipes activate the mode when it is off, then paginate when it is on; Escape and the on-page control provide explicit exit paths.
+- Firefox storage remembers the mode state, while restricted browser pages fail gracefully.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+E-ink Reader provides white backgrounds, black text, grayscale media, and viewport-sized pagination for web reading. It works with touch swipes, mouse wheels, arrow keys, Page Up/Page Down, Space, and the extension popup.
 
 ## User preferences
 

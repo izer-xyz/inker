@@ -1,0 +1,8 @@
+{
+  "name": "e-ink-reader-firefox",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "package": "rm -f e-ink-reader-firefox.zip && zip -r e-ink-reader-firefox.zip manifest.json content.js popup.html popup.css popup.js README.md"
+  }
+}

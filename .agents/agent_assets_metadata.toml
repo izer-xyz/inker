@@ -1,0 +1,16 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "gP6fzNbbcSw-IQ725XZRf"
+uri = "file://firefox-extension/e-ink-reader-firefox.zip"
+type = "unspecified"
+title = "E-ink Reader Firefox extension"
+description = "Installable Firefox WebExtension package with swipe activation, page-by-page navigation, high-contrast styling, popup controls, and keyboard shortcuts."
+logical_id = "69046b99-b0d0-4881-835e-9c96ed94c6f3"
+content_hash = "sha256:0d41b0b419a102485d90a727975306c0d0846a4a77dcc6fc78694601c6a33e70"
+size = 6453
+mtime_ms = 1789644487859
+storage_uri = "gcs://replit-rams-assets-kirk/rams/assets/repl:d72f296d-d380-4eaf-b4c0-8e3720604c8f/69046b99-b0d0-4881-835e-9c96ed94c6f3/edd54919-0309-4c18-85a9-b3e5d9201f6e"
+storage_version_token = "1789644492670832"
+content_type = "application/octet-stream"

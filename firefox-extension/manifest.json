@@ -1,0 +1,34 @@
+{
+  "manifest_version": 3,
+  "name": "E-ink Reader",
+  "version": "1.0.0",
+  "description": "A calm, high-contrast reading mode with page-by-page navigation for e-ink screens.",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "eink-reader@example.com",
+      "strict_min_version": "109.0"
+    }
+  },
+  "permissions": [
+    "storage",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "action": {
+    "default_title": "E-ink Reader",
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
+}

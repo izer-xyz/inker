@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>E-ink Reader</title>
+    <link rel="stylesheet" href="popup.css">
+  </head>
+  <body>
+    <main class="popup">
+      <header class="masthead">
+        <div class="mark" aria-hidden="true">E</div>
+        <div>
+          <p class="eyebrow">READING MODE</p>
+          <h1>E-ink Reader</h1>
+        </div>
+      </header>
+
+      <section class="state-card" aria-live="polite">
+        <div>
+          <p class="eyebrow">CURRENT PAGE</p>
+          <p id="state-label" class="state-label">Checking page…</p>
+        </div>
+        <button id="toggle" class="toggle" type="button" aria-pressed="false">
+          <span class="toggle-knob"></span>
+          <span id="toggle-text">Turn on</span>
+        </button>
+      </section>
+
+      <section class="instructions">
+        <p class="eyebrow">ON YOUR E-INK SCREEN</p>
+        <div class="instruction-row">
+          <span class="gesture">↕</span>
+          <p><strong>Swipe up or down</strong><br>to enter page mode and turn pages.</p>
+        </div>
+        <div class="instruction-row">
+          <span class="gesture">←→</span>
+          <p><strong>Wheel or arrow keys</strong><br>move one reading page at a time.</p>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <span>White paper · black ink</span>
+        <span>ESC exits</span>
+      </footer>
+      <p id="error" class="error" hidden>This page cannot be changed by an extension.</p>
+    </main>
+    <script src="popup.js"></script>
+  </body>
+</html>
