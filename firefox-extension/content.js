@@ -7,6 +7,7 @@
   const PAGE_OVERLAP = 72;
   const STATUS_ID = "eink-reader-status";
   const STYLE_ID = "eink-reader-styles";
+  const STATIC_POSITION_CLASS = "eink-reader-static-position";
   const ZOOM_STORAGE_KEY = "einkReaderZoom";
   const MIN_ZOOM = 75;
   const MAX_ZOOM = 150;
@@ -17,6 +18,8 @@
   let touchStart = null;
   let wheelAccumulator = 0;
   let statusTimer = null;
+  let stickyObserver = null;
+  const staticPositionElements = new Set();
 
   const contrastCss = `
     html.eink-reader-mode,
@@ -35,6 +38,16 @@
 
     html.eink-reader-mode body :not(img):not(video):not(canvas):not(svg):not(path):not(iframe) {
       background-color: #ffffff !important;
+    }
+
+    html.eink-reader-mode body .${STATIC_POSITION_CLASS} {
+      position: static !important;
+      inset: auto !important;
+      top: auto !important;
+      right: auto !important;
+      bottom: auto !important;
+      left: auto !important;
+      z-index: auto !important;
     }
 
     html.eink-reader-mode a,
@@ -150,6 +163,53 @@
     style.id = STYLE_ID;
     style.textContent = contrastCss;
     (document.head || document.documentElement).appendChild(style);
+  }
+
+  function scanForStickyElements() {
+    if (!document.body) return;
+
+    for (const element of document.body.querySelectorAll("*")) {
+      if (element.id === STATUS_ID) continue;
+      if (staticPositionElements.has(element) && element.classList.contains(STATIC_POSITION_CLASS)) continue;
+
+      const position = window.getComputedStyle(element).position;
+      if (position !== "sticky" && position !== "fixed") continue;
+
+      element.classList.add(STATIC_POSITION_CLASS);
+      staticPositionElements.add(element);
+    }
+  }
+
+  function startStickyObserver() {
+    if (stickyObserver || !document.body) return;
+
+    stickyObserver = new MutationObserver(function (mutations) {
+      if (!enabled || !mutations.some((mutation) => mutation.addedNodes.length || mutation.attributeName)) {
+        return;
+      }
+      scanForStickyElements();
+    });
+    stickyObserver.observe(document.body, {
+      attributes: true,
+      attributeFilter: ["class", "style"],
+      childList: true,
+      subtree: true
+    });
+  }
+
+  function stopStickyObserver() {
+    if (stickyObserver) {
+      stickyObserver.disconnect();
+      stickyObserver = null;
+    }
+  }
+
+  function restoreStickyElements() {
+    stopStickyObserver();
+    for (const element of staticPositionElements) {
+      element.classList.remove(STATIC_POSITION_CLASS);
+    }
+    staticPositionElements.clear();
   }
 
   function ensureStatus() {
@@ -275,9 +335,12 @@
     applyZoom();
 
     if (enabled) {
+      scanForStickyElements();
+      startStickyObserver();
       ensureStatus();
       showStatus("PAGE MODE · ON");
     } else {
+      restoreStickyElements();
       removeStatus();
       clearTimeout(statusTimer);
     }
