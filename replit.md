@@ -31,13 +31,13 @@ Firefox extension that makes web pages easier to read on e-ink devices by using 
 ## Architecture decisions
 
 - The extension uses a content script rather than a separate reader view so the page's links, forms, and normal browsing behavior remain available.
-- Vertical swipes activate the mode when it is off, then paginate when it is on; Escape and the on-page control provide explicit exit paths.
+- Horizontal swipes activate the mode when it is off, then paginate when it is on; vertical swipes are ignored for actions, and Escape plus the on-page control provide explicit exit paths.
 - Sticky and fixed-position elements are temporarily converted to normal flow while reading mode is active, so page headers and footers do not cover every paginated viewport.
 - Firefox storage remembers the mode, while restricted browser pages fail gracefully.
 
 ## Product
 
-E-ink Reader provides white backgrounds, black text, strongly underlined links, grayscale media, normal-flow headers and footers, and viewport-sized pagination for web reading. It works with touch swipes, mouse wheels, arrow keys, Page Up/Page Down, Space, the on-page control, and the extension popup.
+E-ink Reader provides white backgrounds, black text, strongly underlined links, grayscale media, normal-flow headers and footers, and viewport-sized pagination for web reading. It works with horizontal touch swipes, mouse wheels, arrow keys, Page Up/Page Down, Space, page navigation buttons, the on-page control, and the extension popup.
 
 ## User preferences
 

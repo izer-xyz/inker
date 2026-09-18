@@ -21,6 +21,7 @@ body {
 
 .masthead,
 .state-card,
+.page-actions,
 .instruction-row,
 .footer {
   display: flex;
@@ -72,6 +73,33 @@ h1 {
   margin: 0;
   font-family: Georgia, "Times New Roman", serif;
   font-size: 16px;
+}
+
+.page-actions {
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.page-button {
+  flex: 1;
+  min-height: 34px;
+  border: 1px solid #171717;
+  background: #fffdf7;
+  color: #171717;
+  font-size: 11px;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.page-button:hover:not(:disabled),
+.page-button:focus-visible:not(:disabled) {
+  background: #171717;
+  color: #fffdf7;
+}
+
+.page-button:disabled {
+  cursor: not-allowed;
+  opacity: .35;
 }
 
 .toggle {

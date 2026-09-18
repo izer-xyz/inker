@@ -117,6 +117,19 @@
       letter-spacing: .03em !important;
     }
 
+    html.eink-reader-mode #${STATUS_ID} .eink-reader-page-button {
+      padding: 5px 7px !important;
+      border: 1px solid #000000 !important;
+      font: 700 10px/1 system-ui, sans-serif !important;
+      letter-spacing: .04em !important;
+      white-space: nowrap !important;
+    }
+
+    html.eink-reader-mode #${STATUS_ID} .eink-reader-page-button:hover {
+      background: #000000 !important;
+      color: #ffffff !important;
+    }
+
     html.eink-reader-mode #${STATUS_ID} .eink-reader-dot {
       width: 8px !important;
       height: 8px !important;
@@ -188,15 +201,27 @@
     status = document.createElement("div");
     status.id = STATUS_ID;
     status.innerHTML = `
+      <button class="eink-reader-page-button" data-action="page-up" type="button" title="Page up" aria-label="Page up">← PAGE UP</button>
       <button class="eink-reader-status-button" type="button" title="Turn off e-ink reading mode">
         <span class="eink-reader-dot" aria-hidden="true"></span>
         <span data-role="label">PAGE MODE · ON</span>
       </button>
+      <button class="eink-reader-page-button" data-action="page-down" type="button" title="Page down" aria-label="Page down">PAGE DOWN →</button>
     `;
+    status.querySelector('[data-action="page-up"]').addEventListener("click", function (event) {
+      event.preventDefault();
+      event.stopPropagation();
+      goToPage(-1);
+    });
     status.querySelector(".eink-reader-status-button").addEventListener("click", function (event) {
       event.preventDefault();
       event.stopPropagation();
       setEnabled(false);
+    });
+    status.querySelector('[data-action="page-down"]').addEventListener("click", function (event) {
+      event.preventDefault();
+      event.stopPropagation();
+      goToPage(1);
     });
     document.documentElement.appendChild(status);
     return status;
@@ -274,12 +299,14 @@
   }
 
   function handleTouchMove(event) {
-    if (!enabled || !touchStart || event.touches.length !== 1) return;
+    if (!touchStart || event.touches.length !== 1) return;
     const touch = event.touches[0];
     const deltaX = touch.clientX - touchStart.x;
     const deltaY = touch.clientY - touchStart.y;
+    const horizontalIntent = Math.abs(deltaX) > 16 && Math.abs(deltaX) > Math.abs(deltaY) * 1.15;
+    const verticalIntent = Math.abs(deltaY) > 16 && Math.abs(deltaY) > Math.abs(deltaX) * 1.15;
 
-    if (Math.abs(deltaY) > 16 && Math.abs(deltaY) > Math.abs(deltaX) * 1.15) {
+    if (horizontalIntent || (enabled && verticalIntent)) {
       event.preventDefault();
     }
   }
@@ -289,10 +316,10 @@
     const touch = event.changedTouches[0];
     const deltaX = touch.clientX - touchStart.x;
     const deltaY = touch.clientY - touchStart.y;
-    const isVertical = Math.abs(deltaY) >= SWIPE_THRESHOLD && Math.abs(deltaY) > Math.abs(deltaX) * 1.2;
+    const isHorizontal = Math.abs(deltaX) >= SWIPE_THRESHOLD && Math.abs(deltaX) > Math.abs(deltaY) * 1.2;
     touchStart = null;
 
-    if (!isVertical) return;
+    if (!isHorizontal) return;
 
     if (!enabled) {
       event.preventDefault();
@@ -301,7 +328,7 @@
     }
 
     event.preventDefault();
-    goToPage(deltaY < 0 ? 1 : -1);
+    goToPage(deltaX < 0 ? 1 : -1);
   }
 
   function handleWheel(event) {
@@ -335,6 +362,10 @@
   function onRuntimeMessage(message) {
     if (!message) return;
     if (message.type === "eink-reader:get-state") {
+      return Promise.resolve({ enabled });
+    }
+    if (message.type === "eink-reader:page-turn") {
+      if (enabled) goToPage(Number(message.direction) < 0 ? -1 : 1);
       return Promise.resolve({ enabled });
     }
     if (message.type !== "eink-reader:set-enabled") return;

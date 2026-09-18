@@ -5,6 +5,8 @@
   const toggle = document.getElementById("toggle");
   const toggleText = document.getElementById("toggle-text");
   const stateLabel = document.getElementById("state-label");
+  const pageUp = document.getElementById("page-up");
+  const pageDown = document.getElementById("page-down");
   const error = document.getElementById("error");
   let activeTabId = null;
   let enabled = false;
@@ -13,6 +15,8 @@
     toggle.setAttribute("aria-pressed", String(enabled));
     toggleText.textContent = enabled ? "Turn off" : "Turn on";
     stateLabel.textContent = enabled ? "Page mode is on" : "Standard scrolling";
+    pageUp.disabled = !enabled;
+    pageDown.disabled = !enabled;
   }
 
   async function getActiveTab() {
@@ -59,12 +63,33 @@
       render();
     } catch (messageError) {
       error.hidden = false;
-      stateLabel.textContent = "Swipe to activate";
+      stateLabel.textContent = "Swipe left or right to activate";
     }
   }
 
   toggle.addEventListener("click", function () {
     if (activeTabId) sendState(!enabled);
+  });
+
+  async function turnPage(direction) {
+    if (!activeTabId || !enabled) return;
+    try {
+      await getPageState(activeTabId);
+      await api.tabs.sendMessage(activeTabId, {
+        type: "eink-reader:page-turn",
+        direction
+      });
+    } catch (messageError) {
+      error.hidden = false;
+    }
+  }
+
+  pageUp.addEventListener("click", function () {
+    turnPage(-1);
+  });
+
+  pageDown.addEventListener("click", function () {
+    turnPage(1);
   });
 
   init();
