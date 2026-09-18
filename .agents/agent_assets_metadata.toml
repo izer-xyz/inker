@@ -28,3 +28,17 @@ mtime_ms = 1789731192818
 storage_uri = "gcs://replit-rams-assets-kirk/rams/assets/repl:d72f296d-d380-4eaf-b4c0-8e3720604c8f/5943157f-abbe-4dd8-b51d-9a894383a7db/37013b2f-ea74-49bf-a38b-91b7d5d5b5a9"
 storage_version_token = "1789731197164085"
 content_type = "application/octet-stream"
+
+[[outputs]]
+id = "e2ZqF_-e5X5bRCs8WedCg"
+uri = "file://firefox-extension/inky-firefox-v1.0.1.zip"
+type = "unspecified"
+title = "Corrected Inky Firefox extension v1.0.1"
+description = "Freshly rebuilt package with one valid manifest.json containing Inky version 1.0.1. The embedded manifest was parsed and verified to match the source exactly."
+logical_id = "7d49386d-4dcb-4f97-b246-b746ec856c6e"
+content_hash = "sha256:d43978b979ce75edfb631554153712329730a72f765d40e89c2c982b0acfd763"
+size = 7755
+mtime_ms = 1789731439722
+storage_uri = "gcs://replit-rams-assets-kirk/rams/assets/repl:d72f296d-d380-4eaf-b4c0-8e3720604c8f/7d49386d-4dcb-4f97-b246-b746ec856c6e/44577c5f-6275-4964-aa88-766f0c310d35"
+storage_version_token = "1789731450174346"
+content_type = "application/octet-stream"
