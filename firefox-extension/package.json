@@ -1,7 +1,7 @@
 {
   "name": "inky-firefox",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "scripts": {
     "package": "rm -f inky-firefox.zip && zip -r inky-firefox.zip manifest.json content.js popup.html popup.css popup.js README.md"
   }
