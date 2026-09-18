@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "E-ink Reader",
+  "name": "Inky",
   "version": "1.0.0",
   "description": "A calm, high-contrast reading mode with page-by-page navigation for e-ink screens.",
   "browser_specific_settings": {
@@ -22,7 +22,7 @@
     "<all_urls>"
   ],
   "action": {
-    "default_title": "E-ink Reader",
+    "default_title": "Inky",
     "default_popup": "popup.html"
   },
   "content_scripts": [

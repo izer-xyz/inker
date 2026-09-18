@@ -1,8 +1,8 @@
 {
-  "name": "e-ink-reader-firefox",
+  "name": "inky-firefox",
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "package": "rm -f e-ink-reader-firefox.zip && zip -r e-ink-reader-firefox.zip manifest.json content.js popup.html popup.css popup.js README.md"
+    "package": "rm -f inky-firefox.zip && zip -r inky-firefox.zip manifest.json content.js popup.html popup.css popup.js README.md"
   }
 }

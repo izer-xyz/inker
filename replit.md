@@ -1,4 +1,4 @@
-# E-ink Reader
+# Inky
 
 Firefox extension that makes web pages easier to read on e-ink devices by using high-contrast styling and gesture-controlled pagination.
 
@@ -37,7 +37,7 @@ Firefox extension that makes web pages easier to read on e-ink devices by using 
 
 ## Product
 
-E-ink Reader provides white backgrounds, black text, strongly underlined links, grayscale media, normal-flow headers and footers, and viewport-sized pagination for web reading. It works with horizontal touch swipes, mouse wheels, arrow keys, Page Up/Page Down, Space, page navigation buttons, the on-page control, and the extension popup.
+Inky provides white backgrounds, black text, strongly underlined links, grayscale media, normal-flow headers and footers, and viewport-sized pagination for web reading. It works with horizontal touch swipes, mouse wheels, arrow keys, Page Up/Page Down, Space, page navigation buttons, the on-page control, and the extension popup.
 
 ## User preferences
 

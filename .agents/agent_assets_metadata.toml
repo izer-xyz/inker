@@ -14,3 +14,17 @@ mtime_ms = 1789730860530
 storage_uri = "gcs://replit-rams-assets-kirk/rams/assets/repl:d72f296d-d380-4eaf-b4c0-8e3720604c8f/69046b99-b0d0-4881-835e-9c96ed94c6f3/944770b4-9bfa-4855-a4f7-0368cb233993"
 storage_version_token = "1789730865962646"
 content_type = "application/octet-stream"
+
+[[outputs]]
+id = "ayfw6r80QRMRV9SL6Ujmd"
+uri = "file://firefox-extension/inky-firefox.zip"
+type = "unspecified"
+title = "Inky Firefox extension"
+description = "Renamed Firefox WebExtension package for Inky, preserving the existing extension ID and all reading-mode behavior."
+logical_id = "5943157f-abbe-4dd8-b51d-9a894383a7db"
+content_hash = "sha256:0a0dd4e767ae651c05303bcbdeeab7a46b10f7589e444ca44b2356ccc6947d2e"
+size = 7755
+mtime_ms = 1789730929558
+storage_uri = "gcs://replit-rams-assets-kirk/rams/assets/repl:d72f296d-d380-4eaf-b4c0-8e3720604c8f/5943157f-abbe-4dd8-b51d-9a894383a7db/9588e24b-c91a-44cc-b840-93ca5ba22a8f"
+storage_version_token = "1789730935920944"
+content_type = "application/octet-stream"

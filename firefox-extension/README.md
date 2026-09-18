@@ -1,6 +1,6 @@
-# E-ink Reader for Firefox
+# Inky for Firefox
 
-E-ink Reader turns ordinary web pages into a high-contrast, page-by-page reading surface.
+Inky turns ordinary web pages into a high-contrast, page-by-page reading surface.
 
 ## Features
 
