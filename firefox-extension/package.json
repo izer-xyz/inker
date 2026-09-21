@@ -1,7 +1,7 @@
 {
   "name": "inky-firefox",
   "private": true,
-  "version": "1.0.1",
+  "version": "1.1.0",
   "scripts": {
     "package": "rm -f inky-firefox.zip && { cat ../node_modules/@mozilla/readability/Readability.js; printf '\\nglobalThis.Readability = Readability;\\n'; } > readability.js && zip -r inky-firefox.zip manifest.json readability.js content.js popup.html popup.css popup.js README.md"
   }

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Inky",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "A calm, high-contrast reading mode with page-by-page navigation for e-ink screens.",
   "browser_specific_settings": {
     "gecko": {

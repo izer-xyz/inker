@@ -42,3 +42,17 @@ mtime_ms = 1789731439722
 storage_uri = "gcs://replit-rams-assets-kirk/rams/assets/repl:d72f296d-d380-4eaf-b4c0-8e3720604c8f/7d49386d-4dcb-4f97-b246-b746ec856c6e/44577c5f-6275-4964-aa88-766f0c310d35"
 storage_version_token = "1789731450174346"
 content_type = "application/octet-stream"
+
+[[outputs]]
+id = "uSwLcGT-6T6dsBTDtw7hT"
+uri = "file://firefox-extension/inky-firefox-v1.1.0.zip"
+type = "unspecified"
+title = "Inky Firefox extension v1.1.0"
+description = "Inky Firefox WebExtension package updated to version 1.1.0 with Mozilla Readability and the existing reading-mode controls."
+logical_id = "969b3418-c54d-4f16-92eb-1dd6feb11f2b"
+content_hash = "sha256:89d40306df8b8195dde350c2f2818aa04249baffc340e8034d16881e9d9b5172"
+size = 33154
+mtime_ms = 1789975282705
+storage_uri = "gcs://replit-rams-assets-kirk/rams/assets/repl:d72f296d-d380-4eaf-b4c0-8e3720604c8f/969b3418-c54d-4f16-92eb-1dd6feb11f2b/f80351c5-26e2-4209-80b3-5bd388a5077d"
+storage_version_token = "1789975287448710"
+content_type = "application/octet-stream"
