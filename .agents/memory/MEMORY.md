@@ -1,0 +1,1 @@
+- [Firefox extension bundling](firefox-extension-bundling.md) — WebExtension runtime dependencies must be vendored as classic scripts because the extension directory is outside the pnpm workspace.

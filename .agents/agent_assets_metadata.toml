@@ -19,14 +19,14 @@ content_type = "application/octet-stream"
 id = "ayfw6r80QRMRV9SL6Ujmd"
 uri = "file://firefox-extension/inky-firefox.zip"
 type = "unspecified"
-title = "Inky Firefox extension v1.0.1"
-description = "Inky Firefox WebExtension package updated to version 1.0.1 with the existing horizontal swipe pagination and reading-mode features."
+title = "Inky Firefox extension with Mozilla Readability"
+description = "Updated Inky package using @mozilla/readability 0.6.0 to extract the primary article into a focused reader view, with existing pagination and controls preserved."
 logical_id = "5943157f-abbe-4dd8-b51d-9a894383a7db"
-content_hash = "sha256:81af77ebd933d2de9514bbf00678a8e79dedbd7d52dd9c1e3876eefd3467f0d4"
-size = 7755
-mtime_ms = 1789731192818
-storage_uri = "gcs://replit-rams-assets-kirk/rams/assets/repl:d72f296d-d380-4eaf-b4c0-8e3720604c8f/5943157f-abbe-4dd8-b51d-9a894383a7db/37013b2f-ea74-49bf-a38b-91b7d5d5b5a9"
-storage_version_token = "1789731197164085"
+content_hash = "sha256:a3cea8f46a3c705f6254873a7fd2a62f0af146f2a46c64232e3026e96dbcdf0d"
+size = 33154
+mtime_ms = 1789975168093
+storage_uri = "gcs://replit-rams-assets-kirk/rams/assets/repl:d72f296d-d380-4eaf-b4c0-8e3720604c8f/5943157f-abbe-4dd8-b51d-9a894383a7db/f96a9f70-363d-4010-935e-1b38bc5ab18f"
+storage_version_token = "1789975199003874"
 content_type = "application/octet-stream"
 
 [[outputs]]

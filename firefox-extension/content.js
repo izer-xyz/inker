@@ -7,67 +7,126 @@
   const PAGE_OVERLAP = 72;
   const STATUS_ID = "eink-reader-status";
   const STYLE_ID = "eink-reader-styles";
-  const STATIC_POSITION_CLASS = "eink-reader-static-position";
+  const READER_ROOT_ID = "eink-reader-document";
 
   let enabled = false;
   let touchStart = null;
   let wheelAccumulator = 0;
   let statusTimer = null;
-  let stickyObserver = null;
-  const staticPositionElements = new Set();
+  let readerRoot = null;
 
-  const contrastCss = `
+  const readerCss = `
     html.eink-reader-mode,
     html.eink-reader-mode body {
       background: #ffffff !important;
       color: #000000 !important;
     }
 
-    html.eink-reader-mode body,
-    html.eink-reader-mode body * {
+    html.eink-reader-mode body {
+      margin: 0 !important;
+    }
+
+    html.eink-reader-mode body > :not(#${READER_ROOT_ID}) {
+      display: none !important;
+    }
+
+    html.eink-reader-mode body > #${READER_ROOT_ID} {
+      display: block !important;
+    }
+
+    #${READER_ROOT_ID} {
+      box-sizing: border-box !important;
+      min-height: 100vh !important;
+      padding: clamp(24px, 7vw, 72px) clamp(18px, 6vw, 64px) 96px !important;
+      background: #ffffff !important;
       color: #000000 !important;
-      border-color: #000000 !important;
+      font-family: Georgia, "Times New Roman", serif !important;
+      font-size: clamp(18px, 2.2vw, 22px) !important;
+      line-height: 1.65 !important;
       text-shadow: none !important;
       box-shadow: none !important;
     }
 
-    html.eink-reader-mode body :not(img):not(video):not(canvas):not(svg):not(path):not(iframe) {
-      background-color: #ffffff !important;
+    #${READER_ROOT_ID} .eink-reader-article {
+      box-sizing: border-box !important;
+      max-width: 44rem !important;
+      margin: 0 auto !important;
     }
 
-    html.eink-reader-mode body .${STATIC_POSITION_CLASS} {
-      position: static !important;
-      inset: auto !important;
-      top: auto !important;
-      right: auto !important;
-      bottom: auto !important;
-      left: auto !important;
-      z-index: auto !important;
+    #${READER_ROOT_ID} .eink-reader-title {
+      margin: 0 0 0.85em !important;
+      color: #000000 !important;
+      font: 700 clamp(30px, 5vw, 48px)/1.08 Georgia, "Times New Roman", serif !important;
+      letter-spacing: -0.02em !important;
     }
 
-    html.eink-reader-mode a,
-    html.eink-reader-mode a * {
+    #${READER_ROOT_ID} .eink-reader-byline {
+      margin: -0.45em 0 2em !important;
+      color: #000000 !important;
+      font: 16px/1.4 Georgia, "Times New Roman", serif !important;
+    }
+
+    #${READER_ROOT_ID} p,
+    #${READER_ROOT_ID} ul,
+    #${READER_ROOT_ID} ol,
+    #${READER_ROOT_ID} blockquote,
+    #${READER_ROOT_ID} pre,
+    #${READER_ROOT_ID} figure {
+      margin: 0 0 1.15em !important;
+    }
+
+    #${READER_ROOT_ID} h1,
+    #${READER_ROOT_ID} h2,
+    #${READER_ROOT_ID} h3,
+    #${READER_ROOT_ID} h4,
+    #${READER_ROOT_ID} h5,
+    #${READER_ROOT_ID} h6 {
+      color: #000000 !important;
+      font-family: Georgia, "Times New Roman", serif !important;
+      line-height: 1.2 !important;
+    }
+
+    #${READER_ROOT_ID} a,
+    #${READER_ROOT_ID} a * {
       color: #000000 !important;
       text-decoration-line: underline !important;
-      text-decoration-thickness: .75px !important;
-      text-underline-offset: .08em !important;
+      text-decoration-thickness: 0.75px !important;
+      text-underline-offset: 0.08em !important;
     }
 
-    html.eink-reader-mode img,
-    html.eink-reader-mode video,
-    html.eink-reader-mode canvas,
-    html.eink-reader-mode svg {
+    #${READER_ROOT_ID} img,
+    #${READER_ROOT_ID} video,
+    #${READER_ROOT_ID} canvas,
+    #${READER_ROOT_ID} svg {
+      max-width: 100% !important;
+      height: auto !important;
       filter: grayscale(100%) contrast(1.12) !important;
     }
 
-    html.eink-reader-mode input,
-    html.eink-reader-mode textarea,
-    html.eink-reader-mode select,
-    html.eink-reader-mode button {
+    #${READER_ROOT_ID} pre,
+    #${READER_ROOT_ID} code {
+      white-space: pre-wrap !important;
+      overflow-wrap: anywhere !important;
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace !important;
+      font-size: 0.78em !important;
+    }
+
+    #${READER_ROOT_ID} blockquote {
+      border-left: 3px solid #000000 !important;
+      padding-left: 1em !important;
+    }
+
+    #${READER_ROOT_ID} input,
+    #${READER_ROOT_ID} textarea,
+    #${READER_ROOT_ID} select,
+    #${READER_ROOT_ID} button {
+      box-sizing: border-box !important;
+      max-width: 100% !important;
       background: #ffffff !important;
       color: #000000 !important;
       border: 2px solid #000000 !important;
       border-radius: 0 !important;
+      font: inherit !important;
     }
 
     html.eink-reader-mode #${STATUS_ID} {
@@ -84,7 +143,7 @@
       background: #ffffff !important;
       color: #000000 !important;
       font: 600 12px/1.2 system-ui, sans-serif !important;
-      letter-spacing: .03em !important;
+      letter-spacing: 0.03em !important;
       box-shadow: 3px 3px 0 #000000 !important;
       user-select: none !important;
     }
@@ -114,14 +173,14 @@
       align-items: center !important;
       gap: 8px !important;
       font: 600 12px/1.2 system-ui, sans-serif !important;
-      letter-spacing: .03em !important;
+      letter-spacing: 0.03em !important;
     }
 
     html.eink-reader-mode #${STATUS_ID} .eink-reader-page-button {
       padding: 5px 7px !important;
       border: 1px solid #000000 !important;
       font: 700 10px/1 system-ui, sans-serif !important;
-      letter-spacing: .04em !important;
+      letter-spacing: 0.04em !important;
       white-space: nowrap !important;
     }
 
@@ -136,62 +195,68 @@
       border-radius: 50% !important;
       background: #000000 !important;
     }
-
   `;
 
   function ensureStyle() {
     if (document.getElementById(STYLE_ID)) return;
     const style = document.createElement("style");
     style.id = STYLE_ID;
-    style.textContent = contrastCss;
+    style.textContent = readerCss;
     (document.head || document.documentElement).appendChild(style);
   }
 
-  function scanForStickyElements() {
-    if (!document.body) return;
-
-    for (const element of document.body.querySelectorAll("*")) {
-      if (element.id === STATUS_ID) continue;
-      if (staticPositionElements.has(element) && element.classList.contains(STATIC_POSITION_CLASS)) continue;
-
-      const position = window.getComputedStyle(element).position;
-      if (position !== "sticky" && position !== "fixed") continue;
-
-      element.classList.add(STATIC_POSITION_CLASS);
-      staticPositionElements.add(element);
+  function removeReaderView() {
+    if (readerRoot) {
+      readerRoot.remove();
+      readerRoot = null;
     }
   }
 
-  function startStickyObserver() {
-    if (stickyObserver || !document.body) return;
-
-    stickyObserver = new MutationObserver(function (mutations) {
-      if (!enabled || !mutations.some((mutation) => mutation.addedNodes.length || mutation.attributeName)) {
-        return;
-      }
-      scanForStickyElements();
-    });
-    stickyObserver.observe(document.body, {
-      attributes: true,
-      attributeFilter: ["class", "style"],
-      childList: true,
-      subtree: true
-    });
-  }
-
-  function stopStickyObserver() {
-    if (stickyObserver) {
-      stickyObserver.disconnect();
-      stickyObserver = null;
+  function createReaderView() {
+    if (readerRoot) return true;
+    if (typeof globalThis.Readability !== "function") {
+      console.error("Inky: Mozilla Readability is not available.");
+      return false;
     }
-  }
 
-  function restoreStickyElements() {
-    stopStickyObserver();
-    for (const element of staticPositionElements) {
-      element.classList.remove(STATIC_POSITION_CLASS);
+    const parsedArticle = new globalThis.Readability(document.cloneNode(true), {
+      keepClasses: false
+    }).parse();
+
+    if (!parsedArticle || !parsedArticle.content) {
+      console.warn("Inky: Mozilla Readability could not find an article on this page.");
+      return false;
     }
-    staticPositionElements.clear();
+
+    const root = document.createElement("main");
+    root.id = READER_ROOT_ID;
+    root.setAttribute("aria-label", "Inky reading view");
+
+    const article = document.createElement("article");
+    article.className = "eink-reader-article";
+
+    if (parsedArticle.title) {
+      const title = document.createElement("h1");
+      title.className = "eink-reader-title";
+      title.textContent = parsedArticle.title;
+      article.appendChild(title);
+    }
+
+    if (parsedArticle.byline) {
+      const byline = document.createElement("p");
+      byline.className = "eink-reader-byline";
+      byline.textContent = parsedArticle.byline;
+      article.appendChild(byline);
+    }
+
+    const content = document.createElement("div");
+    content.className = "eink-reader-content";
+    content.innerHTML = parsedArticle.content;
+    article.appendChild(content);
+    root.appendChild(article);
+    document.body.appendChild(root);
+    readerRoot = root;
+    return true;
   }
 
   function ensureStatus() {
@@ -265,24 +330,30 @@
   }
 
   function setEnabled(nextValue, persist) {
-    enabled = Boolean(nextValue);
+    const nextEnabled = Boolean(nextValue);
+
+    if (nextEnabled && !enabled && !createReaderView()) {
+      return false;
+    }
+
+    enabled = nextEnabled;
     ensureStyle();
     document.documentElement.classList.toggle("eink-reader-mode", enabled);
 
     if (enabled) {
-      scanForStickyElements();
-      startStickyObserver();
       ensureStatus();
       showStatus("PAGE MODE · ON");
     } else {
-      restoreStickyElements();
+      removeReaderView();
       removeStatus();
       clearTimeout(statusTimer);
+      window.scrollTo(0, 0);
     }
 
     if (persist !== false && api?.storage?.local) {
       api.storage.local.set({ [STORAGE_KEY]: enabled });
     }
+    return enabled;
   }
 
   function toggle() {

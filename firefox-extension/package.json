@@ -3,6 +3,6 @@
   "private": true,
   "version": "1.0.1",
   "scripts": {
-    "package": "rm -f inky-firefox.zip && zip -r inky-firefox.zip manifest.json content.js popup.html popup.css popup.js README.md"
+    "package": "rm -f inky-firefox.zip && { cat ../node_modules/@mozilla/readability/Readability.js; printf '\\nglobalThis.Readability = Readability;\\n'; } > readability.js && zip -r inky-firefox.zip manifest.json readability.js content.js popup.html popup.css popup.js README.md"
   }
 }

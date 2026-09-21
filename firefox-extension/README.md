@@ -6,9 +6,9 @@ Inky turns ordinary web pages into a high-contrast, page-by-page reading surface
 
 - Swipe horizontally on any web page to activate reading mode.
 - Swipe left/right, use the mouse wheel, or press `PageUp`, `PageDown`, `ArrowUp`, `ArrowDown`, or Space to move one page at a time.
-- Forces white backgrounds and black text for improved e-ink contrast.
-- Underlines links with a strong black rule so destinations remain easy to find.
-- Converts sticky and fixed-position page elements into normal document flow, so headers stay near the beginning and footers stay near the end instead of covering every page.
+- Uses Mozilla Readability to extract the primary article and remove surrounding page chrome.
+- Presents the extracted article with a high-contrast white reading surface and strongly underlined links for e-ink screens.
+- Keeps the original page intact underneath the reader view so exiting restores the page without reloading it.
 - Removes shadows and text effects that create unnecessary ghosting.
 - Converts images, video, canvas, and SVG artwork to grayscale with slightly higher contrast.
 - Shows a small `PAGE MODE · ON` control so reading mode can be turned off without reopening the extension menu.
